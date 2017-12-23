@@ -1,19 +1,22 @@
 from memory_profiler import profile
 import boto3
+import datetime
 import uuid
-import json
+
 
 sc = boto3.client('s3')
-bucket_name = 'xxxxxxxx'
-encoding = 'utf-8'
+
+bucket_name = 'xxxxxxxxxxx'
+
 
 @profile()
 def upload():
+    # key = f'tests/{datetime.datetime.now().isoformat()}'
     key = f'tests/{uuid.uuid4().hex[10:]}'
     mpu = sc.create_multipart_upload(
         Bucket=bucket_name,
-        ContentEncoding=encoding,
-        ContentType=f'application/x-jsonlines; charset={encoding}',
+        # ContentEncoding='shift-jis',
+        ContentType='text/csv',
         Key=key
     )
 
@@ -24,13 +27,13 @@ def upload():
 
     for i in range(end):
         part_number = i + 1
-        contnet = f'{json.dumps(j)}\n' * 1024 * 1024
+        contnet = str(part_number) * 1024 * 1024 * 5
         part = sc.upload_part(
             Bucket=bucket_name,
             Key=key,
             PartNumber=part_number,
             UploadId=upload_id,
-            Body=contnet.encode(encoding)
+            Body=contnet.encode('utf-8')
         )
         parts.append({
             'PartNumber': part_number,
@@ -42,10 +45,10 @@ def upload():
                 Bucket=bucket_name,
                 MultipartUpload={
                     'Parts': parts
-                },
-                Key=key,
-                UploadId=upload_id
-            )
+            },
+            Key=key,
+            UploadId=upload_id
+        )
 
 
 if __name__ == '__main__':
