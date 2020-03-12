@@ -6,7 +6,7 @@ docutils==0.14
 idna==2.6
 jmespath==0.9.3
 memory-profiler==0.47
-psutil==5.3.1
+psutil==5.6.6
 python-dateutil==2.6.1
 requests==2.18.4
 s3transfer==0.1.11
